@@ -2,6 +2,7 @@ import pandas as pd
 import json
 import gzip
 from pathlib import Path
+from tqdm import tqdm  # Importação da biblioteca de barra de progresso
 
 def extrair_andamento(caminho_gz):
     """Lê o andamento municipal a partir dos ficheiros compactados."""
@@ -24,7 +25,11 @@ def construir_dataset(pasta_snapshot, candidatos_alvo):
     """
     registos = []
     
-    for ficheiro in pasta_snapshot.glob("*-ab.json.gz"):
+    # 1. Transformamos o gerador numa lista para o tqdm saber o total de ficheiros
+    ficheiros = list(pasta_snapshot.glob("*-ab.json.gz"))
+    
+    # 2. Envolvemos a lista com tqdm() e damos um nome (desc)
+    for ficheiro in tqdm(ficheiros, desc="Processando ficheiros de estado"):
         uf = ficheiro.name.split("-")[0]
         andamentos = extrair_andamento(ficheiro)
         
